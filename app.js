@@ -17,6 +17,9 @@ const eraserTool = document.getElementById("eraserTool");
 const undoBtn = document.getElementById("undoBtn");
 const redoBtn = document.getElementById("redoBtn");
 const clearBtn = document.getElementById("clearBtn");
+const clearModal = document.getElementById("clearModal");
+const confirmClearBtn = document.getElementById("confirmClearBtn");
+const cancelClearBtn = document.getElementById("cancelClearBtn");
 const imageUpload = document.getElementById("imageUpload");
 const saveBtn = document.getElementById("saveBtn");
 
@@ -70,13 +73,29 @@ eraserTool.addEventListener("click", function () {
 
 undoBtn.addEventListener("click", undo);
 redoBtn.addEventListener("click", redo);
-clearBtn.addEventListener("click", clearCanvas);
+
+clearBtn.addEventListener("click", function () {
+  clearModal.classList.remove("hidden");
+});
+
+confirmClearBtn.addEventListener("click", function () {
+  canvas.clear();
+  canvas.setBackgroundColor("#ffffff", canvas.renderAll.bind(canvas));
+  undoStack = [];
+  redoStack = [];
+  clearModal.classList.add("hidden");
+});
+
+cancelClearBtn.addEventListener("click", function () {
+  clearModal.classList.add("hidden");
+});
+
 imageUpload.addEventListener("click", function () {
-    fileInput.click();
+  fileInput.click();
 });
 fileInput.addEventListener("change", function (e) {
-    const file = e.target.files[0];
-    uploadImage(file);
+  const file = e.target.files[0];
+  uploadImage(file);
 });
 saveBtn.addEventListener("click", saveAsJpg);
 
@@ -108,42 +127,41 @@ function clearCanvas() {
 }
 
 function uploadImage(file) {
-    const reader = new FileReader();
+  const reader = new FileReader();
 
-    // create a new image object
-    reader.onload = function (e) {
-        const img = new Image();
-        img.src = e.target.result;
-        img.onload = function () {
-            const maxSize = 400;
-            let width = img.width;
-            let height = img.height;
-            let scaleRatio = 1;
-            
-            // scale the image down if it's too large
-            if (width > maxSize || height > maxSize) {
-                scaleRatio = Math.min(maxSize / width, maxSize / height);
-                width = width * scaleRatio;
-                height = height * scaleRatio;
-            }
-            
-            // create a new fabric image instance
-            const imgInstance = new fabric.Image(img, {
-                left: 0,
-                top: 0,
-                scaleX: scaleRatio,
-                scaleY: scaleRatio,
-                selectable: true,
-            });
-            canvas.add(imgInstance);
-            undoStack.push(imgInstance);
-            canvas.renderAll();
-        };
+  // create a new image object
+  reader.onload = function (e) {
+    const img = new Image();
+    img.src = e.target.result;
+    img.onload = function () {
+      const maxSize = 400;
+      let width = img.width;
+      let height = img.height;
+      let scaleRatio = 1;
+
+      // scale the image down if it's too large
+      if (width > maxSize || height > maxSize) {
+        scaleRatio = Math.min(maxSize / width, maxSize / height);
+        width = width * scaleRatio;
+        height = height * scaleRatio;
+      }
+
+      // create a new fabric image instance
+      const imgInstance = new fabric.Image(img, {
+        left: 0,
+        top: 0,
+        scaleX: scaleRatio,
+        scaleY: scaleRatio,
+        selectable: true,
+      });
+      canvas.add(imgInstance);
+      undoStack.push(imgInstance);
+      canvas.renderAll();
     };
-    // read the image file as a data URL
-    reader.readAsDataURL(file);
+  };
+  // read the image file as a data URL
+  reader.readAsDataURL(file);
 }
-
 
 function saveAsJpg() {
   const dataURL = canvas.toDataURL({
