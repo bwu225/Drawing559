@@ -6,6 +6,7 @@ let undoStack = [];
 let redoStack = [];
 
 const colorPicker = document.getElementById("colorPicker");
+const colorPickerStyle = document.getElementById("colorPickerStyle");
 const brushSize = document.getElementById("brushSize");
 const brushSizeText = document.getElementById("brushSizeText");
 const drawTool = document.getElementById("drawTool");
@@ -26,8 +27,21 @@ const saveBtn = document.getElementById("saveBtn");
 canvas.freeDrawingBrush.color = colorPicker.value;
 canvas.freeDrawingBrush.width = parseInt(brushSize.value, 10);
 
-colorPicker.addEventListener("change", function () {
+const defaultColor = colorPicker.value;
+colorPickerStyle.style.backgroundColor = defaultColor;
+canvas.freeDrawingBrush.color = defaultColor;
+
+colorPicker.addEventListener('input', function() {
+  colorPickerStyle.style.backgroundColor = this.value;
   canvas.freeDrawingBrush.color = this.value;
+});
+
+colorPicker.addEventListener('click', function(event) {
+  event.stopPropagation();
+});
+
+document.addEventListener('click', function() {
+  colorPicker.blur();
 });
 
 brushSize.addEventListener("input", function () {
