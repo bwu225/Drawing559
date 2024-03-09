@@ -5,7 +5,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/bwu225/Drawing559)](https://github.com/bwu225/Drawing559/network)
 [![GitHub issues](https://img.shields.io/github/issues/bwu225/Drawing559)](https://github.com/bwu225/Drawing559/issues)
 
-Introducing the CS 559 Drawing App, the first extra project for the Computer Graphics course! 🖌️🎓 This innovative web application is the result of over 6 hours of dedicated work by Brian Wu. As a solo endeavor, Brian poured his passion and expertise into crafting an immersive and intuitive drawing experience that pushes the boundaries of what's possible in the browser. 🌐💡 By leveraging cutting-edge web technologies and his keen eye for design, Brian has created a tool that empowers users to unleash their creativity and bring their artistic visions to life! 🎨✨ Get ready to embark on a thrilling journey of self-expression and digital artistry with the CS 559 Drawing App! 🚀🎉
+Introducing the CS 559 Drawing App, the first additional project for the Computer Graphics course! 🖌️🎓 This innovative web application is the result of over 6 hours of dedicated work by Brian Wu. As a solo endeavor, Brian poured his passion and expertise into crafting an immersive and intuitive drawing experience that pushes the boundaries of what's possible in the browser. 🌐💡 By leveraging cutting-edge web technologies and his keen eye for design, Brian has created a tool that empowers users to unleash their creativity and bring their artistic visions to life! 🎨✨ Get ready to embark on a thrilling journey of self-expression and digital artistry with the CS 559 Drawing App! 🚀🎉
 
 ## 🎯 Features
 
