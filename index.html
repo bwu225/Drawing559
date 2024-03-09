@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <title>CS 559 Drawing App By Brian Wu</title>
+</head>
+<body>
+  <div class="container mx-auto p-4">
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <div class="mt-4 flex flex-wrap items-center">
+      <input type="color" id="colorPicker" class="mr-4 mb-2">
+      <input type="range" id="brushSize" min="1" max="50" value="10" class="mr-4 mb-2">
+      <span id="brushSizeText" class="mr-4 mb-2">10 px</span>
+      <div class="space-x-2">
+        <button id="drawTool" class="tool-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Draw</button>
+        <button id="rectangleTool" class="tool-btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Rectangle</button>
+        <button id="circleTool" class="tool-btn bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Circle</button>
+        <button id="mouseTool" class="tool-btn bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Mouse</button>
+        <button id="textTool" class="tool-btn bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Text</button>
+        <button id="eraserTool" class="tool-btn bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Eraser</button>
+        <button id="undoBtn" class="tool-btn bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Undo</button>
+        <button id="redoBtn" class="tool-btn bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded">Redo</button>
+        <button id="clearBtn" class="tool-btn bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Clear</button>
+        <input type="file" id="fileInput" style="display: none;" accept="image/*" />
+        <button id="imageUpload" class="tool-btn bg-green-500 hover:bg-green-600 cursor-pointer text-white font-bold py-2 px-4 rounded">Upload Image</button>
+        <button id="saveBtn" class="tool-btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Save as JPG</button>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
