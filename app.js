@@ -1,12 +1,10 @@
-const canvas = new fabric.Canvas("canvas", {
-  backgroundColor: "#ffffff",
-});
-let currentTool = "draw";
-let undoStack = [];
-let redoStack = [];
+// Description: This file contains the JavaScript code for the drawing app.
+// Author: Brian Wu 2024
 
+const canvas = new fabric.Canvas("canvas", { backgroundColor: "#ffffff" });
 const colorPicker = document.getElementById("colorPicker");
 const colorPickerStyle = document.getElementById("colorPickerStyle");
+const defaultColor = colorPicker.value;
 const brushSize = document.getElementById("brushSize");
 const brushSizeText = document.getElementById("brushSizeText");
 const drawTool = document.getElementById("drawTool");
@@ -24,74 +22,87 @@ const cancelClearBtn = document.getElementById("cancelClearBtn");
 const imageUpload = document.getElementById("imageUpload");
 const saveBtn = document.getElementById("saveBtn");
 
+// Set the initial tool and stacks
+let currentTool = "draw";
+let undoStack = [];
+let redoStack = [];
+
+// Set the initial brush size and color
 canvas.freeDrawingBrush.color = colorPicker.value;
 canvas.freeDrawingBrush.width = parseInt(brushSize.value, 10);
-
-const defaultColor = colorPicker.value;
 colorPickerStyle.style.backgroundColor = defaultColor;
 canvas.freeDrawingBrush.color = defaultColor;
 
-colorPicker.addEventListener('input', function() {
+// Event listeners for the color picker and brush size input
+colorPicker.addEventListener("input", function () {
   colorPickerStyle.style.backgroundColor = this.value;
   canvas.freeDrawingBrush.color = this.value;
 });
 
-colorPicker.addEventListener('click', function(event) {
+// Prevent the color picker from closing when clicking on it
+colorPicker.addEventListener("click", function (event) {
   event.stopPropagation();
 });
 
-document.addEventListener('click', function() {
+// Close the color picker when clicking outside of it
+document.addEventListener("click", function () {
   colorPicker.blur();
 });
 
+// Update the brush size when the input changes
 brushSize.addEventListener("input", function () {
   const size = parseInt(this.value, 10);
   canvas.freeDrawingBrush.width = size;
   brushSizeText.textContent = `${size} px`;
 });
 
+// Prevent the brush size input from closing when clicking on it
 drawTool.addEventListener("click", function () {
   currentTool = "draw";
   canvas.isDrawingMode = true;
 });
 
+// Event listeners for rectangle tools
 rectangleTool.addEventListener("click", function () {
   currentTool = "rectangle";
   canvas.isDrawingMode = false;
   canvas.selection = false;
 });
 
+// Event listeners for circle tools
 circleTool.addEventListener("click", function () {
   currentTool = "circle";
   canvas.isDrawingMode = false;
   canvas.selection = false;
 });
 
+// Event listeners for the mouse tool
 mouseTool.addEventListener("click", function () {
   currentTool = "mouse";
   canvas.isDrawingMode = false;
   canvas.selection = true;
 });
 
+// Event listeners for the text tool
 textTool.addEventListener("click", function () {
   currentTool = "text";
   canvas.isDrawingMode = false;
   canvas.selection = false;
 });
 
+// Event listeners for the eraser tool
 eraserTool.addEventListener("click", function () {
   currentTool = "eraser";
   canvas.freeDrawingBrush.color = "#ffffff";
   canvas.isDrawingMode = true;
 });
 
-undoBtn.addEventListener("click", undo);
-redoBtn.addEventListener("click", redo);
-
+// Event listeners for the clear button
 clearBtn.addEventListener("click", function () {
   clearModal.classList.remove("hidden");
 });
 
+// Event listeners for the confirm and cancel clear buttons
 confirmClearBtn.addEventListener("click", function () {
   canvas.clear();
   canvas.setBackgroundColor("#ffffff", canvas.renderAll.bind(canvas));
@@ -100,10 +111,23 @@ confirmClearBtn.addEventListener("click", function () {
   clearModal.classList.add("hidden");
 });
 
+// Event listeners after clicking the cancel button
 cancelClearBtn.addEventListener("click", function () {
   clearModal.classList.add("hidden");
 });
 
+// Function to clear the canvas
+function clearCanvas() {
+  if (confirm("Are you sure you want to clear the canvas?")) {
+    canvas.clear(); // clear the canvas
+    canvas.setBackgroundColor("#ffffff", canvas.renderAll.bind(canvas)); // set the background color to white
+    // clear the undo and redo stacks
+    undoStack = [];
+    redoStack = [];
+  }
+}
+
+// Event listeners for the image upload button and file input
 imageUpload.addEventListener("click", function () {
   fileInput.click();
 });
@@ -113,6 +137,11 @@ fileInput.addEventListener("change", function (e) {
 });
 saveBtn.addEventListener("click", saveAsJpg);
 
+// Event listeners for the undo and redo buttons
+undoBtn.addEventListener("click", undo);
+redoBtn.addEventListener("click", redo);
+
+// Function to undo the last action
 function undo() {
   if (undoStack.length > 0) {
     const lastObj = undoStack.pop();
@@ -122,6 +151,7 @@ function undo() {
   }
 }
 
+// Function to redo the last action
 function redo() {
   if (redoStack.length > 0) {
     const lastObj = redoStack.pop();
@@ -131,15 +161,11 @@ function redo() {
   }
 }
 
-function clearCanvas() {
-  if (confirm("Are you sure you want to clear the canvas?")) {
-    canvas.clear();
-    canvas.setBackgroundColor("#ffffff", canvas.renderAll.bind(canvas));
-    undoStack = [];
-    redoStack = [];
-  }
-}
-
+/**
+ * Uploads an image file and adds it to the canvas.
+ *
+ * @param {File} file - The image file to upload.
+ */
 function uploadImage(file) {
   const reader = new FileReader();
 
@@ -177,6 +203,7 @@ function uploadImage(file) {
   reader.readAsDataURL(file);
 }
 
+// Save the canvas as a JPEG image file.
 function saveAsJpg() {
   const dataURL = canvas.toDataURL({
     format: "jpeg",
@@ -188,121 +215,149 @@ function saveAsJpg() {
   link.click();
 }
 
+// Create an object to store the drawing tool handlers
+const toolHandlers = {
+  text: handleTextTool,
+  rectangle: handleRectangleTool,
+  circle: handleCircleTool,
+  mouse: handleMouseTool,
+};
+
+// Add event handler for the mouse down event
 canvas.on("mouse:down", function (o) {
-  if (currentTool === "text") {
-    const pointer = canvas.getPointer(o.e);
-    const text = new fabric.IText("Text", {
-      left: pointer.x,
-      top: pointer.y,
-      fill: colorPicker.value,
-      fontSize: Math.max(50, brushSize.value),
-      selectable: true,
-    });
-    canvas.add(text);
-    undoStack.push(text);
-    canvas.setActiveObject(text);
-    text.enterEditing();
-    text.hiddenTextarea.focus();
+  const handler = toolHandlers[currentTool];
+  if (handler) {
+    handler(o);
   }
 });
 
-canvas.on("mouse:down", function (o) {
-  if (currentTool === "rectangle") {
-    const pointer = canvas.getPointer(o.e);
-    const origX = pointer.x;
-    const origY = pointer.y;
-    let rect = new fabric.Rect({
-      left: origX,
-      top: origY,
-      width: 0,
-      height: 0,
-      stroke: colorPicker.value,
-      strokeWidth: parseInt(brushSize.value, 10),
-      fill: "transparent",
-      selectable: false,
-    });
-    canvas.add(rect);
-    undoStack.push(rect);
-
-    canvas.on("mouse:move", function (o) {
-      if (!rect) return;
-      const pointer = canvas.getPointer(o.e);
-      rect.set({
-        width: Math.abs(origX - pointer.x),
-        height: Math.abs(origY - pointer.y),
-        left: origX < pointer.x ? origX : pointer.x,
-        top: origY < pointer.y ? origY : pointer.y,
-      });
-      canvas.renderAll();
-    });
-
-    canvas.on("mouse:up", function () {
-      canvas.off("mouse:move");
-      canvas.off("mouse:up");
-      rect.set({ selectable: true });
-      rect = null; // reset the rectangle
-    });
-  } else if (currentTool === "circle") {
-    const pointer = canvas.getPointer(o.e);
-    const origX = pointer.x;
-    const origY = pointer.y;
-    const circle = new fabric.Circle({
-      left: origX,
-      top: origY,
-      radius: 0,
-      stroke: colorPicker.value,
-      strokeWidth: brushSize.value,
-      fill: "transparent",
-      selectable: false,
-      originX: "center",
-      originY: "center",
-    });
-    canvas.add(circle);
-    undoStack.push(circle);
-
-    canvas.on("mouse:move", function (o) {
-      const pointer = canvas.getPointer(o.e);
-      const radius = Math.sqrt(
-        Math.pow(origX - pointer.x, 2) + Math.pow(origY - pointer.y, 2)
-      );
-      circle.set({
-        radius: radius,
-      });
-      canvas.renderAll();
-    });
-
-    canvas.on("mouse:up", function () {
-      canvas.off("mouse:move");
-      circle.selectable = true;
-    });
-  } else if (currentTool === "mouse") {
-    const pointer = canvas.getPointer(o.e);
-    const origX = pointer.x;
-    const origY = pointer.y;
-    const mouse = new fabric.Path(`M ${origX} ${origY} L ${origX} ${origY}`, {
-      stroke: colorPicker.value,
-      strokeWidth: brushSize.value,
-      fill: false,
-      selectable: false,
-    });
-    canvas.add(mouse);
-    undoStack.push(mouse);
-
-    canvas.on("mouse:move", function (o) {
-      const pointer = canvas.getPointer(o.e);
-      mouse.set({
-        path: `M ${origX} ${origY} L ${pointer.x} ${pointer.y}`,
-      });
-      canvas.renderAll();
-    });
-
-    canvas.on("mouse:up", function () {
-      canvas.off("mouse:move");
-      mouse.selectable = true;
-    });
-  }
-});
-
+// Add path to undo stack
 canvas.on("path:created", function (e) {
   undoStack.push(e.path);
 });
+
+// Get the pointer position
+function getPointer(event) {
+  return canvas.getPointer(event.e);
+}
+
+// Add function to add an object to the canvas and undo stack
+function addObjectToCanvas(obj) {
+  canvas.add(obj);
+  undoStack.push(obj);
+}
+
+// Add function to handle the text tool
+function handleTextTool(event) {
+  const pointer = getPointer(event);
+  const text = new fabric.IText("Text", {
+    left: pointer.x,
+    top: pointer.y,
+    fill: colorPicker.value,
+    fontSize: Math.max(50, brushSize.value),
+    selectable: true,
+  });
+  addObjectToCanvas(text);
+  canvas.setActiveObject(text);
+  text.enterEditing();
+  text.hiddenTextarea.focus();
+}
+
+// Add function to handle the rectangle tool
+function handleRectangleTool(event) {
+  const pointer = getPointer(event);
+  const origX = pointer.x;
+  const origY = pointer.y;
+  let rect = new fabric.Rect({
+    left: origX,
+    top: origY,
+    width: 0,
+    height: 0,
+    stroke: colorPicker.value,
+    strokeWidth: parseInt(brushSize.value, 10),
+    fill: "transparent",
+    selectable: false,
+  });
+  addObjectToCanvas(rect);
+
+  canvas.on("mouse:move", function (o) {
+    if (!rect) return;
+    const pointer = getPointer(o);
+    rect.set({
+      width: Math.abs(origX - pointer.x),
+      height: Math.abs(origY - pointer.y),
+      left: origX < pointer.x ? origX : pointer.x,
+      top: origY < pointer.y ? origY : pointer.y,
+    });
+    canvas.renderAll();
+  });
+
+  canvas.on("mouse:up", function () {
+    canvas.off("mouse:move");
+    canvas.off("mouse:up");
+    rect.set({ selectable: true });
+    rect = null;
+  });
+}
+
+// Add function to handle the circle tool
+function handleCircleTool(event) {
+  const pointer = getPointer(event);
+  const origX = pointer.x;
+  const origY = pointer.y;
+  const circle = new fabric.Circle({
+    left: origX,
+    top: origY,
+    radius: 0,
+    stroke: colorPicker.value,
+    strokeWidth: brushSize.value,
+    fill: "transparent",
+    selectable: false,
+    originX: "center",
+    originY: "center",
+  });
+  addObjectToCanvas(circle);
+
+  // Add event listeners for the mouse move events
+  canvas.on("mouse:move", function (o) {
+    const pointer = getPointer(o);
+    const radius = Math.sqrt(
+      Math.pow(origX - pointer.x, 2) + Math.pow(origY - pointer.y, 2)
+    );
+    circle.set({ radius: radius });
+    canvas.renderAll();
+  });
+
+  // Add event listener for the mouse up event
+  canvas.on("mouse:up", function () {
+    canvas.off("mouse:move");
+    circle.selectable = true;
+  });
+}
+
+// Add function to handle the mouse tool
+function handleMouseTool(event) {
+  const pointer = getPointer(event);
+  const origX = pointer.x;
+  const origY = pointer.y;
+  const mouse = new fabric.Path(`M ${origX} ${origY} L ${origX} ${origY}`, {
+    stroke: colorPicker.value,
+    strokeWidth: brushSize.value,
+    fill: false,
+    selectable: false,
+  });
+  addObjectToCanvas(mouse);
+
+  // Add event listeners for the mouse move events
+  canvas.on("mouse:move", function (o) {
+    const pointer = getPointer(o);
+    mouse.set({ path: `M ${origX} ${origY} L ${pointer.x} ${pointer.y}` });
+    canvas.renderAll();
+  });
+
+  // Add event listener for the mouse up event
+  canvas.on("mouse:up", function () {
+    canvas.off("mouse:move");
+    mouse.selectable = true;
+  });
+}
