@@ -61,6 +61,7 @@ drawTool.addEventListener("click", function () {
   currentTool = "draw";
   canvas.freeDrawingBrush.color = colorPicker.value;
   canvas.isDrawingMode = true;
+  hideEraserAlert();
 });
 
 // Event listeners for rectangle tools
@@ -69,6 +70,7 @@ rectangleTool.addEventListener("click", function () {
   canvas.freeDrawingBrush.color = colorPicker.value;
   canvas.isDrawingMode = false;
   canvas.selection = false;
+  hideEraserAlert();
 });
 
 // Event listeners for circle tools
@@ -77,6 +79,7 @@ circleTool.addEventListener("click", function () {
   canvas.freeDrawingBrush.color = colorPicker.value;
   canvas.isDrawingMode = false;
   canvas.selection = false;
+  hideEraserAlert();
 });
 
 // Event listeners for the mouse tool
@@ -85,6 +88,7 @@ mouseTool.addEventListener("click", function () {
   canvas.freeDrawingBrush.color = colorPicker.value;
   canvas.isDrawingMode = false;
   canvas.selection = true;
+  hideEraserAlert();
 });
 
 // Event listeners for the text tool
@@ -93,6 +97,7 @@ textTool.addEventListener("click", function () {
   canvas.freeDrawingBrush.color = colorPicker.value;
   canvas.isDrawingMode = false;
   canvas.selection = false;
+  hideEraserAlert();
 });
 
 // Event listeners for the eraser tool
@@ -100,7 +105,20 @@ eraserTool.addEventListener("click", function () {
   currentTool = "eraser";
   canvas.freeDrawingBrush.color = "#ffffff";
   canvas.isDrawingMode = true;
+  showEraserAlert();
 });
+
+// Show the eraser alert
+function showEraserAlert() {
+  const eraserAlert = document.getElementById("eraserAlert");
+  eraserAlert.classList.remove("hidden");
+}
+
+// Hide the eraser alert
+function hideEraserAlert() {
+  const eraserAlert = document.getElementById("eraserAlert");
+  eraserAlert.classList.add("hidden");
+}
 
 // Event listeners for the clear button
 clearBtn.addEventListener("click", function () {
@@ -111,9 +129,11 @@ clearBtn.addEventListener("click", function () {
 confirmClearBtn.addEventListener("click", function () {
   canvas.clear();
   canvas.setBackgroundColor("#ffffff", canvas.renderAll.bind(canvas));
+  canvas.freeDrawingBrush.color = colorPicker.value;
   undoStack = [];
   redoStack = [];
   clearModal.classList.add("hidden");
+  hideEraserAlert();
 });
 
 // Event listeners after clicking the cancel button
