@@ -59,12 +59,14 @@ brushSize.addEventListener("input", function () {
 // Prevent the brush size input from closing when clicking on it
 drawTool.addEventListener("click", function () {
   currentTool = "draw";
+  canvas.freeDrawingBrush.color = colorPicker.value;
   canvas.isDrawingMode = true;
 });
 
 // Event listeners for rectangle tools
 rectangleTool.addEventListener("click", function () {
   currentTool = "rectangle";
+  canvas.freeDrawingBrush.color = colorPicker.value;
   canvas.isDrawingMode = false;
   canvas.selection = false;
 });
@@ -72,6 +74,7 @@ rectangleTool.addEventListener("click", function () {
 // Event listeners for circle tools
 circleTool.addEventListener("click", function () {
   currentTool = "circle";
+  canvas.freeDrawingBrush.color = colorPicker.value;
   canvas.isDrawingMode = false;
   canvas.selection = false;
 });
@@ -79,6 +82,7 @@ circleTool.addEventListener("click", function () {
 // Event listeners for the mouse tool
 mouseTool.addEventListener("click", function () {
   currentTool = "mouse";
+  canvas.freeDrawingBrush.color = colorPicker.value;
   canvas.isDrawingMode = false;
   canvas.selection = true;
 });
@@ -86,6 +90,7 @@ mouseTool.addEventListener("click", function () {
 // Event listeners for the text tool
 textTool.addEventListener("click", function () {
   currentTool = "text";
+  canvas.freeDrawingBrush.color = colorPicker.value;
   canvas.isDrawingMode = false;
   canvas.selection = false;
 });
